@@ -1,4 +1,4 @@
-package lab4;
+package Original;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,16 +11,20 @@ public class Original {
 
     public Original(String inputFile) {
         try {
-            Scanner sc = new Scanner(new File(inputFile));
-            String[] dateStrings = sc.nextLine().split(", ");
-            LocalDateTime[] dates = new LocalDateTime[dateStrings.length-1]; //Bug 1 does not use the whole array (not reading whole file)
-            for(int i = 0; i < dates.length; i++) {
-                dates[i] = LocalDateTime.parse(dateStrings[i], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-            }
-            System.out.println("The total fee for the inputfile is" + getTotalFeeCost(dates));
-        } catch(IOException e) {
+           Calculator(inputFile);
+        } catch (IOException e) {
             System.err.println("Could not read file " + inputFile);
         }
+    }
+
+    public static void Calculator(String inputFile) throws IOException {
+        Scanner sc = new Scanner(new File(inputFile));
+        String[] dateStrings = sc.nextLine().split(", ");
+        LocalDateTime[] dates = new LocalDateTime[dateStrings.length-1]; //Bug 1 does not use the whole array (not reading whole file)
+        for(int i = 0; i < dates.length; i++) {
+            dates[i] = LocalDateTime.parse(dateStrings[i], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        }
+        System.out.println("The total fee for the inputfile is" + getTotalFeeCost(dates));
     }
 
     public static int getTotalFeeCost(LocalDateTime[] dates) {

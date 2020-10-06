@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.io.ByteArrayOutputStream;
@@ -14,25 +14,28 @@ import java.time.format.DateTimeParseException;
 @DisplayName("Testing TollFeeCalculator")
 public class TollFeeCalculatorTest {
 
-    private Object IOException;
-
     @Test
     @DisplayName("Check if Exception is thrown where it should be")
-    void CheckIfThrowsIsThrownAsItShould() {
+    void CheckExceptionsIsThrown() {
         //Test 1
         //Check if ToManyDaysInFileException is thrown
+        String fil1 = "src/lab4/txtfiler/Lab4.txt";
+        assertThrows(ToManyDaysInFileException.class, () -> TollFeeCalculator.calculator(fil1));
 
         //Test 2
-        //Check if DateTimeParseException is thrown
+        //Check if MinutesInWrongOrderException is thrown
+        String fil4 = "src/lab4/txtfiler/wrongordertime.txt";
+        assertThrows(MinutesInWrongOrderException.class, () -> TollFeeCalculator.calculator(fil4));
 
         //Test 3
-        //Check if IOException is thrown
-        LocalDateTime[] dates = new LocalDateTime[2];
-        dates[0] = LocalDateTime.of(2020,9,26,10,15); //Lördag
-        dates[1] = LocalDateTime.of(2020,9,27,10,15); //Söndag
+        //Check if DateTimeParseException is thrown
+        String fil2 = "src/lab4/txtfiler/feloutput.txt";
+        assertThrows(DateTimeParseException.class, () -> TollFeeCalculator.calculator(fil2));
 
-
-
+        //Test 4
+        //Check if FileNotFoundException is thrown if couldnt find file.
+        String fil3 = "src/lab4/txtfiler/testfilsomintefinns.txt";
+        assertThrows(FileNotFoundException.class, () -> TollFeeCalculator.calculator(fil3));
     }
 
     @Test
@@ -56,7 +59,7 @@ public class TollFeeCalculatorTest {
 
     @Test
     @DisplayName("Check if tollFeeValue is right for specific times & totalmaximum is returned as 60")
-    void RightTollFeeAndTotalMaximumReturned() throws ToManyDaysInFileException {
+    void RightTollFeeAndTotalMaximumReturned() throws ToManyDaysInFileException, MinutesInWrongOrderException {
         //Before test, creates an array of times that i know specific values for.
         LocalDateTime[] dates = new LocalDateTime[13];
         dates[0] = LocalDateTime.of(2020,9,23,5,0); // 0
@@ -90,25 +93,24 @@ public class TollFeeCalculatorTest {
         assertEquals(0, TollFeeCalculator.getTollFeePerPassing(dates[11])); //0
         assertEquals(0, TollFeeCalculator.getTollFeePerPassing(dates[12])); //0
 
-        //Test 3
+        //Test 2
         //Checking that the maximum of the file is 60 since i know the dates above will be 83.
         assertEquals(60, TollFeeCalculator.getTotalFeeCost(dates));
     }
 
     @Test
     @DisplayName("Check if totaldayfee is correct if many passages under 60minutes")
-    void ManyPassagesUnder60Minutes() {
-        //Check with a inputfiles with many passages under 60minutes that i know the value of.
-        //Check with a inputfiles with many passages under 60minutes that i know the value of.
+    void ManyPassagesUnder60Minutes() throws FileNotFoundException, MinutesInWrongOrderException, ToManyDaysInFileException {
+        //Checking that the math is correct and
 
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        // Call main to run lab4.txt to check output
-        String[] src = new String[1];
-        src[0] = "" + new TollFeeCalculator("src/lab4/januarimassapassagerunder60min.txt");
+        // Call calculator januarimassapassagerunder60min.txt
 
-        TollFeeCalculator.main(src);
+        String src = "src/lab4/txtfiler/januarimassapassagerunder60min.txt";
+        TollFeeCalculator.calculator(src);
+
 
         // Deal with line breaks that are different between systems. Convert all other line breaks to \n.
         String actualOutput = outContent.toString();
