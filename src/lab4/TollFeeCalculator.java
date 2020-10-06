@@ -32,6 +32,7 @@ public class TollFeeCalculator {
             dates[i] = LocalDateTime.parse(dateStrings[i], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
         System.out.println("The total fee for the inputfile is " + getTotalFeeCost(dates));
+        sc.close(); //Added close of scanner.
     }
 
     public static int getTotalFeeCost(LocalDateTime[] dates) throws ToManyDaysInFileException, MinutesInWrongOrderException {
